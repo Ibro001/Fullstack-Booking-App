@@ -7,6 +7,8 @@ import 'react-date-range/dist/styles.css'
 import 'react-date-range/dist/theme/default.css'
 import { format } from 'date-fns'
 import { useNavigate } from 'react-router-dom'
+import { useContext } from 'react'
+import { SearchContext } from '../../context/SearchContext'
 
 
 const Header = ({type}) => {
@@ -16,7 +18,7 @@ const Header = ({type}) => {
   const [openDate, setOpenDate] = useState(false);
 
   //date range//
-  const [date,setDate] = useState([
+  const [dates,setDates] = useState([
     {
       startDate: new Date(),
       endDate: new Date(),
@@ -44,8 +46,11 @@ const Header = ({type}) => {
   const navigate = useNavigate();
 
   const  handleSearch = () => {
-    navigate('/hotels', {state: { destination, date, options } })
+    dispatch({type: 'NEW_SEARCH', payload:{destination,dates,options}})
+    navigate('/hotels', {state: { destination, dates, options } })
   }
+
+  const {dispatch} = useContext(SearchContext);
 
 
   return (
@@ -96,9 +101,9 @@ const Header = ({type}) => {
                 <FontAwesomeIcon icon={faCalendarDays} className='headerIcon' onClick={() => setOpenDate(!openDate)}/>
                 <span className='headerSearchText'>
                   {
-                    `${format(date[0].startDate, 'MM/dd/yyyy')}
+                    `${format(dates[0].startDate, 'MM/dd/yyyy')}
                      to 
-                     ${format(date[0].endDate, 'MM/dd/yyyy')} `
+                     ${format(dates[0].endDate, 'MM/dd/yyyy')} `
                   }
                 </span>
               </div>
@@ -106,9 +111,9 @@ const Header = ({type}) => {
                 openDate &&
                 <DateRange 
                 editableDateInputs= {true}
-                onChange = {item => setDate([item.selection])}
+                onChange = {item => setDates([item.selection])}
                 moveRangeOnFirstSelection= {false}
-                ranges= {date}
+                ranges= {dates}
                 className='date'
                 minDate={new Date()}
               />
